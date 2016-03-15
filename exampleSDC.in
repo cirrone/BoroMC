@@ -1,0 +1,19 @@
+# $Id: run2.mac,v 1.6 2002-12-16 16:37:25 maire Exp $
+#
+# Macro file of "exampleSDC.cc"
+#
+/control/verbose 2
+#
+# Distribute the source over the volume 
+# Generate the primaries from a (large) sphere
+# and then restrict the generation to the desired volume
+# only
+/gps/pos/type Volume
+/gps/pos/shape Sphere
+/gps/pos/radius 1 cm
+/gps/pos/confine sample
+# Change to Co60, at rest
+#/gps/particle ion
+#/gps/ion 27 60
+#/gps/energy 0 eV
+/run/beamOn 10000
