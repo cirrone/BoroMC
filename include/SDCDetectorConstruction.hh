@@ -120,14 +120,16 @@ public:
     
     // Definition of the position and dimension
     G4double BoroPositionX, BoroPositionY, BoroPositionZ;
-    G4double BoroDimensionX, BoroDimensionY, BoroDimensionZ;
+    G4double BoroDimensionX, BoroInternalRadius, BoroExternalRadius;
     
+    G4double GermaniumInternalRadius;
+    G4double GermaniumExternalRadius;
+    G4double GermaniumDimensionX;
     
-    // Definition of the parameters
-    G4double crystalDiameter, crystalHeight;
-    G4double holeDiameter, holeHeight;
-    G4double innerRadius;
-    G4double sampleRadius;
+    G4double GermaniumPositionX;
+    G4double GermaniumPositionY;
+    G4double GermaniumPositionZ;
+    
     
     // Definition of the 'solid volumes' variables
     G4Box*  solidWorld;
@@ -135,10 +137,9 @@ public:
 
     G4Sphere* sampleSolid;
     G4Tubs* BoroSolidVolume;
-    G4Tubs* Germanium_SolidVolume1;
-    G4Tubs* Germanium_SolidVolume2;
-    G4SubtractionSolid* Germanium_SolidVolume;
-
+    
+    G4Tubs* GermaniumSolidVolume;
+    
     
     // Definition of the 'physical volumes' variables
     G4VPhysicalVolume*  physicalWorld;
@@ -146,20 +147,17 @@ public:
     
     //
     G4VPhysicalVolume* BoroPhysicalVolume;
-    G4VPhysicalVolume* Germanium_PhysicalVolume;
-    //
-    //
-
+    G4LogicalVolume * GermaniumLogicalVolume;
+    G4VPhysicalVolume *GermaniumPhysicalVolume;
     
     
     // Definition of the 'logical volumes' variables
     G4LogicalVolume*    logicalWorld;
     G4LogicalVolume*    FirstLogicalDetectionPlane;
     G4LogicalVolume*    BoroLogicalVolume;
-    G4LogicalVolume*    Germanium_LogicalVolume;
     
     
-    G4MultiFunctionalDetector* Germanium_Detector;
+    //G4MultiFunctionalDetector* Germanium_Detector;
     G4VPrimitiveScorer* PrimitiveScorer;
     
 private:
@@ -171,10 +169,6 @@ private:
     G4VisAttributes *cyan;
     G4VisAttributes *gray;
     G4VisAttributes *black;
-    
-    G4RotationMatrix rotationMatrix;
-    G4Transform3D BoroTransform;
-    G4ThreeVector BoroPosition;
     
     void DefineMaterials();
    void ComputeWordGeometricalParameters();

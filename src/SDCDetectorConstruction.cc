@@ -62,14 +62,13 @@ worldMaterial(0),physicalWorld(0), logicalWorld(0)
     
     
     //Defaults for Boro
-    BoroPositionX = 4.0 *cm;//-4.0 *cm;
+    BoroPositionX = 0.0 *cm;//-4.0 *cm;
     BoroPositionY = 0.0 *cm;
-    BoroPositionZ = 6.0 *cm;//-6.0 *cm;
+    BoroPositionZ = 0.0 *cm;//-6.0 *cm;
     
-    
-    BoroDimensionX = 0.001 *mm;  //raggio_interno;
-    BoroDimensionY = 15 *mm;; //raggio_esterno;
-    BoroDimensionZ = 11 *cm;;  //lunghezza;
+    BoroDimensionX = 15 *cm;
+    BoroExternalRadius = 15 *mm;
+    BoroInternalRadius = 0.001 *mm;
     
     
     // Defaults for the First Detection Plane
@@ -83,11 +82,13 @@ worldMaterial(0),physicalWorld(0), logicalWorld(0)
     
     
     // ***** Ge crystal *****
-    crystalDiameter = 79*mm;
-    crystalHeight = 81*mm;
-    holeDiameter = 13*mm;
-    holeHeight = 71*mm;
-    innerRadius = 0.*cm;
+    GermaniumInternalRadius = 0.0 *mm;
+    GermaniumExternalRadius = 79.0 *mm;
+    GermaniumDimensionX = 71.0 *mm;
+    
+    GermaniumPositionX = -10.0 *cm;
+    GermaniumPositionY = 0.0 *cm;
+    GermaniumPositionZ = 0.0 *cm;
     
     //Colour //
     green = new G4VisAttributes( G4Colour(0, 1, 0));
@@ -171,8 +172,7 @@ void SDCDetectorConstruction::DefineMaterials()
     Materiale_B10 -> AddElement(Elemento_B10, 1);
     Materiale_B11 = new G4Material("Materiale_Boro11", density=1.15*g/cm3, ncomp=1);
     Materiale_B11-> AddElement(Elemento_B11, 1);
-    
-  
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -207,30 +207,26 @@ G4VPhysicalVolume* SDCDetectorConstruction::ConstructWorld()
     logicalWorld -> SetVisAttributes(gray);
     
 
-
     BoroSolidVolume = new G4Tubs("BoroSolidVolume",
-                                 BoroDimensionX/2, // InnerRadiusFC,
-                                 BoroDimensionY/2, // OuterRadius
-                                 BoroDimensionZ/2,
+                                 BoroInternalRadius/2,
+                                 BoroExternalRadius/2,
+                                 BoroDimensionX/2,
                                  0.*deg,
                                  360.*deg);
     
     
     BoroLogicalVolume = new G4LogicalVolume(BoroSolidVolume,
-                                            Materiale_B10,
+                                            tantalum,
                                             "BoroLogicalVolume",
                                             0,
                                             0,
                                             0);
     
     
-    rotationMatrix  = G4RotationMatrix(0, 90*deg, 90*deg);
-    BoroPosition = G4ThreeVector(BoroPositionX, BoroPositionY,  BoroPositionZ);
-    BoroTransform = G4Transform3D(rotationMatrix, BoroPosition);
-    
-    BoroPhysicalVolume = new G4PVPlacement (BoroTransform,
+    BoroPhysicalVolume = new G4PVPlacement (0,
+                                            G4ThreeVector(BoroPositionX, BoroPositionY,  BoroPositionZ),
                                             BoroLogicalVolume,
-                                            "BoroRotationMatrix",
+                                            "BoroPhysicalVolume",
                                             logicalWorld,
                                             false,
                                             0,
@@ -242,52 +238,38 @@ G4VPhysicalVolume* SDCDetectorConstruction::ConstructWorld()
     
     
     ///////////////////////////////////////////////////////////////////////////////////////
+    
+    G4double phi = 90. *deg;
+    // Matrix definition for a 90 deg rotation with respect to Y axis
+    G4RotationMatrix rm;
+    rm.rotateY(phi);
+    
     //Crystal solid
-    Germanium_SolidVolume1 = new G4Tubs("Germanium_SolidVolume1",
-                                        innerRadius,
-                                        crystalDiameter/2.,
-                                        crystalHeight/2.,
+    GermaniumSolidVolume = new G4Tubs("GermaniumSolidVolume",
+                                        GermaniumInternalRadius,
+                                        GermaniumExternalRadius/2.,
+                                        GermaniumDimensionX/2.,
                                         0,
                                         CLHEP::twopi);
     
-    
-    //Hole
-    Germanium_SolidVolume2 = new G4Tubs("Germanium_SolidVolume1",
-                                        innerRadius,
-                                        holeDiameter/2.,
-                                        holeHeight/2.,
-                                        0,
-                                        CLHEP::twopi);
-    
-    //Relative translation of the hole with respect to the crystal volume
-    G4double zref = -crystalHeight/2. + holeHeight/2. + 1.0*micrometer;
-    
-    Germanium_SolidVolume = new G4SubtractionSolid("Germanium_SolidVolume",
-                                                   Germanium_SolidVolume1,
-                                                   Germanium_SolidVolume2,
-                                                   0, //no rotation
-                                                   G4ThreeVector(0,0,zref));
+    GermaniumLogicalVolume = new G4LogicalVolume(GermaniumSolidVolume,
+                                                 germanium,
+                                                 "GermaniumLogicalVolume",
+                                                 0,
+                                                 0,
+                                                 0);
     
     
-    // Crystal Logical Volume definition
-    Germanium_LogicalVolume = new G4LogicalVolume(Germanium_SolidVolume,                    //its solid
-                                                  germanium,                             //its material
-                                                  "Germanium_LogicalVolume");            //its name
+    GermaniumPhysicalVolume = new G4PVPlacement (G4Transform3D(rm,
+                                                               G4ThreeVector(GermaniumPositionX, GermaniumPositionY,  GermaniumPositionZ)),
+                                            GermaniumLogicalVolume,
+                                            "GermaniumPhysicalVolume",
+                                            logicalWorld,
+                                            false,
+                                            0,
+                                            fCheckOverlaps);
     
-    // Ge Physical Volume Placement at (0,0,0)
-    Germanium_PhysicalVolume = new G4PVPlacement(0,                    //no rotation
-                                                 G4ThreeVector(),      //at (0,0,0)
-                                                 Germanium_LogicalVolume,            //its logical volume
-                                                 "Ge",                 //its name
-                                                 logicalWorld,         //its mother  volume
-                                                 false,                //no boolean operation
-                                                 0,                    //copy number
-                                                 fCheckOverlaps);      // checking overlaps
-    
-    green -> SetForceWireframe(true);
-    Germanium_LogicalVolume -> SetVisAttributes(green);  return physicalWorld;
-    
- return physicalWorld;
+     return physicalWorld;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -297,10 +279,10 @@ void SDCDetectorConstruction::ConstructSDandField()
 {
   G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
  
-  G4MultiFunctionalDetector* cryst = new G4MultiFunctionalDetector("crystal");
+  G4MultiFunctionalDetector* cryst = new G4MultiFunctionalDetector("GermaniumPhysicalVolume");
   G4VPrimitiveScorer* primitiv1 = new G4PSEnergyDeposit("edep");
   cryst->RegisterPrimitive(primitiv1);
-  SetSensitiveDetector("Germanium_LogicalVolume",cryst);
+  SetSensitiveDetector("GermaniumLogicalVolume",cryst);
   
  
 

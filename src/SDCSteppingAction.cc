@@ -33,6 +33,8 @@
 #include "G4Track.hh"
 #include "G4Ions.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4RunManager.hh"
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -48,6 +50,78 @@ SDCSteppingAction::~SDCSteppingAction()
 
 void SDCSteppingAction::UserSteppingAction(const G4Step* step)
 {
+    
+    
+    G4StepPoint* PreStep = step->GetPreStepPoint();
+    G4StepPoint* PostStep = step->GetPostStepPoint();
+    
+    G4double PreStepX = PreStep->GetPosition().x();
+    G4double PreStepY = PreStep->GetPosition().y();
+    G4double PreStepZ = PreStep->GetPosition().z();
+    G4double parentID = step->GetTrack()->GetParentID();
+    G4double trackID = step->GetTrack()->GetTrackID();
+    
+    G4double PostStepX = PostStep->GetPosition().x();
+    G4double PostStepY = PostStep->GetPosition().y();
+    G4double PostStepZ = PostStep->GetPosition().z();
+    
+    G4int eventNum = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
+    G4double eKin = step -> GetPreStepPoint() -> GetKineticEnergy();
+    G4double PosX = step->GetTrack()->GetPosition().x();
+    G4double PosY = step->GetTrack()->GetPosition().y();
+    G4double PosZ = step->GetTrack()->GetPosition().z();
+    G4String material = step -> GetTrack() -> GetMaterial() -> GetName();
+    const G4LogicalVolume* VolumeVertex = step -> GetTrack() -> GetLogicalVolumeAtVertex();
+    G4String VolumeAtVertex = VolumeVertex -> GetName();
+    
+    G4String volume =  step->GetTrack()->GetVolume()->GetName();
+    G4Track* theTrack = step->GetTrack();
+    G4String particleName = step->GetTrack()->GetDefinition()->GetParticleName();
+    
+    const G4VProcess* process = step->GetPostStepPoint()->GetProcessDefinedStep();
+    G4String processName = process->GetProcessName();
+    /*
+     if((aStep->GetTrack()->GetVolume()->GetName()=="physicalDetectionPlane"))
+     &&
+     aStep->GetTrack()->GetDefinition()->GetParticleName() == "proton")
+     {
+     std::ofstream WriteDataIn("Spatial_EnergyDistribution.txt", std::ios::app);
+     WriteDataIn
+     <<   eventNum         << '\t' << "   "
+     <<   particleName     << '\t' << "   "
+     <<   parentID         << '\t' << "   "
+     <<   PosX/CLHEP::mm   << '\t' << "   "
+     <<   PosY/CLHEP::mm   << '\t' << "   "
+     <<   PosZ/CLHEP::mm   << '\t' << "   "
+     <<   eKin             << '\t' << "   "
+     <<   material         << '\t' << "   "
+     <<   G4endl;
+     theTrack -> SetTrackStatus(fKillTrackAndSecondaries);
+     }
+     */
+    
+    if((step->GetTrack()->GetDefinition()->GetParticleName() == "gamma"))
+    {
+        std::ofstream WriteDataIn("Gamma", std::ios::app);
+        WriteDataIn
+        <<   eventNum         << '\t' << "   "
+        <<   particleName     << '\t' << "   "
+        <<   parentID         << '\t' << "   "
+        <<   PosX/CLHEP::mm   << '\t' << "   "
+        <<   PosY/CLHEP::mm   << '\t' << "   "
+        <<   PosZ/CLHEP::mm   << '\t' << "   "
+        <<   eKin/CLHEP::megaelectronvolt             << '\t' << "   "
+        <<   material         << '\t' << "   "
+        <<   processName      << '\t' << "   "
+        <<   VolumeAtVertex   << '\t' << "   "
+        <<   G4endl;
+        //theTrack -> SetTrackStatus(fStopAndKill);
+        theTrack -> SetTrackStatus(fKillTrackAndSecondaries);
+
+    }
+    
+    /*
+    
   //This Stepping action kills long-lived nuclei (they do not decay)
   G4String particleType = step->GetTrack()->GetDefinition()
     ->GetParticleType();
@@ -69,6 +143,7 @@ void SDCSteppingAction::UserSteppingAction(const G4Step* step)
           //stable nuclei are unaffected
         }
     }
+     */
   return;
 }
 

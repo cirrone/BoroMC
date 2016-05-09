@@ -79,7 +79,7 @@ void SDCRunAction::BeginOfRunAction(const G4Run* run)
   analysisManager->FinishNtuple();
   */
 
-  analysisManager->CreateH1("h1","Energy",3000,0.,3000.);
+  analysisManager -> CreateH1("h1","Energy",3000,0.,3000.);
 
   // Create a new output file
   analysisManager->OpenFile("prova.txt");

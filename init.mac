@@ -3,6 +3,9 @@
 #
 # Set some default verbose
 #
+
+/testhadr/Physics QGSP_BERT_EMX
+/run/initialize
 /control/verbose 2
 /control/saveHistory
 /run/verbose 2

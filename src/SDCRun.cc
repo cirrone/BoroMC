@@ -67,7 +67,6 @@ SDCRun::~SDCRun()
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 /// Called at the end of each event
 void SDCRun::RecordEvent(const G4Event* event)
 {
@@ -77,7 +76,7 @@ void SDCRun::RecordEvent(const G4Event* event)
       
             
    fCollID_cryst 
-     = G4SDManager::GetSDMpointer()->GetCollectionID("crystal/edep");
+     = G4SDManager::GetSDMpointer()->GetCollectionID("GermaniumPhysicalVolume/edep");
    //G4cout << " fCollID_cryst: " << fCollID_cryst << G4endl;   
   }
 
@@ -102,6 +101,7 @@ void SDCRun::RecordEvent(const G4Event* event)
   //ok, let's start the game: retrieve the hits-collection in the crystals.
   //This comes from a Geant4 multiscorer of type "G4PSEnergyDeposit", which scores 
   //energy deposit.
+    
   G4THitsMap<G4double>* evtMap = 
     static_cast<G4THitsMap<G4double>*>(HCE->GetHC(fCollID_cryst));
                
@@ -112,7 +112,9 @@ void SDCRun::RecordEvent(const G4Event* event)
     {
       G4double edep = *(itr->second);
       totEdep += edep;
-      ///G4int copyNb  = (itr->first);
+      
+        
+        ///G4int copyNb  = (itr->first);
       ///G4cout << "\n  cryst" << copyNb << ": " << edep/keV << " keV ";
   }  
     
@@ -124,7 +126,7 @@ void SDCRun::RecordEvent(const G4Event* event)
 
   if (totEdep > 0)
     {
-      man->FillH1(0,totEdep/keV);
+      man -> FillH1(0,totEdep/keV);
       fGoodEvents++;
     }
 

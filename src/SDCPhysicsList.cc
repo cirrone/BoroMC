@@ -44,7 +44,7 @@
 //
 
 #include "SDCPhysicsList.hh"
-
+#include "SDCPhysicsListMessenger.hh"
 
 #include "G4DecayPhysics.hh"
 #include "G4EmStandardPhysics.hh"
@@ -94,16 +94,17 @@
 
 SDCPhysicsList::SDCPhysicsList()
 : G4VModularPhysicsList(),
-fEmPhysicsList(0), fParticleList(0)
+fEmPhysicsList(0), fParticleList(0), fMessenger(0)
 {
     G4LossTableManager::Instance();
-    defaultCutValue = 0.7*mm;
+    defaultCutValue = 0.1*mm;
     fCutForGamma     = defaultCutValue;
     fCutForElectron  = defaultCutValue;
     fCutForPositron  = defaultCutValue;
     fCutForProton    = defaultCutValue;
     verboseLevel    = 1;
     
+    fMessenger = new SDCPhysicsListMessenger(this);
     
     // Particles
     fParticleList = new G4DecayPhysics("decays");
@@ -116,7 +117,7 @@ fEmPhysicsList(0), fParticleList(0)
 
 SDCPhysicsList::~SDCPhysicsList()
 {
-
+    delete fMessenger;
     delete fParticleList;
     delete fEmPhysicsList;
     for(size_t i=0; i<fHadronPhys.size(); i++) {
@@ -171,6 +172,8 @@ void SDCPhysicsList::AddPhysicsList(const G4String& name)
         fEmPhysicsList = new G4EmStandardPhysics_option3();
         
     } else if (name == "emstandard_opt4") {
+        G4cout << "SONO DENTRO EMSTANDARD OPT4" << G4endl;
+
         
         delete fEmPhysicsList;
         fEmPhysicsList = new G4EmStandardPhysics_option4();
@@ -243,6 +246,7 @@ void SDCPhysicsList::AddPhysicsList(const G4String& name)
         fHadronPhys.push_back( new G4HadronPhysicsQGSP_BIC());
         
     } else if (name == "QGSP_BIC_EMY") {
+        G4cout << " SONO DENTRO QGSP_BIC_EMY" << G4endl;
         
         AddPhysicsList("emstandard_opt4");
         fHadronPhys.push_back( new G4DecayPhysics());
