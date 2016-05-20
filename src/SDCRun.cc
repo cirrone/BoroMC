@@ -58,11 +58,6 @@ SDCRun::SDCRun()
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-
-
-
-
 SDCRun::~SDCRun()
 { }
 
@@ -90,7 +85,7 @@ void SDCRun::RecordEvent(const G4Event* event)
   //  
   // Get all hits-collections available for this events: there should be two 
   // hits-collection, one of hits in the patient and one of hits in the 
-  // crystals. They are created in the UserGeometry.
+  // crystals. They are cr eated in the UserGeometry.
   G4HCofThisEvent* HCE = event->GetHCofThisEvent();
   if(!HCE) return;
   
@@ -114,19 +109,19 @@ void SDCRun::RecordEvent(const G4Event* event)
       totEdep += edep;
       
         
-        ///G4int copyNb  = (itr->first);
+      ///G4int copyNb  = (itr->first);
       ///G4cout << "\n  cryst" << copyNb << ": " << edep/keV << " keV ";
   }  
     
   G4AnalysisManager* man = G4AnalysisManager::Instance(); 
-  /*
-  man->FillNtupleDColumn(0, totEdep/MeV);
-  man->AddNtupleRow();  
-  */
-
+  
   if (totEdep > 0)
     {
       man -> FillH1(0,totEdep/keV);
+        
+        std::ofstream WriteDataIn("EnergyDeposition.txt", std::ios::app);
+        WriteDataIn	<<   totEdep/MeV  <<   G4endl;
+
       fGoodEvents++;
     }
 

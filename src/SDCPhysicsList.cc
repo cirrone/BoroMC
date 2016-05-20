@@ -77,6 +77,7 @@
 #include "G4HadronPhysicsQGSP_FTFP_BERT.hh"
 #include "G4HadronPhysicsQGS_BIC.hh"
 #include "G4RadioactiveDecayPhysics.hh"
+#include "G4HadronPhysicsQGSP_BIC_AllHP.hh"
 
 #include "G4LossTableManager.hh"
 
@@ -237,7 +238,11 @@ void SDCPhysicsList::AddPhysicsList(const G4String& name)
         
     } else if (name == "QGSP_BERT_HP") {
         
-        SetBuilderList1(true);
+        fHadronPhys.push_back( new G4DecayPhysics());
+        fHadronPhys.push_back( new G4RadioactiveDecayPhysics());
+        fHadronPhys.push_back( new G4EmExtraPhysics());
+        fHadronPhys.push_back( new G4HadronElasticPhysicsHP());
+        fHadronPhys.push_back( new G4StoppingPhysics());
         fHadronPhys.push_back( new G4HadronPhysicsQGSP_BERT_HP());
         
     } else if (name == "QGSP_BIC") {
@@ -268,7 +273,22 @@ void SDCPhysicsList::AddPhysicsList(const G4String& name)
         SetBuilderList0(true);
         fHadronPhys.push_back( new G4HadronPhysicsQGSP_BIC_HP());
         
-    } else {
+        
+        
+    } else if (name == "QGSP_BIC_AllHP"){
+        SetBuilderList0(true);
+        fHadronPhys.push_back( new G4DecayPhysics());
+        fHadronPhys.push_back( new G4RadioactiveDecayPhysics());
+        fHadronPhys.push_back( new G4EmExtraPhysics());
+        fHadronPhys.push_back( new G4HadronElasticPhysicsHP());
+        fHadronPhys.push_back( new G4StoppingPhysics());
+        fHadronPhys.push_back( new G4NeutronTrackingCut());
+        fHadronPhys.push_back( new G4IonBinaryCascadePhysics());
+        fHadronPhys.push_back( new G4HadronPhysicsQGSP_BIC_AllHP());
+
+
+    
+} else {
         
         G4cout << "PhysicsList::AddPhysicsList: <" << name << ">"
         << " is not defined"

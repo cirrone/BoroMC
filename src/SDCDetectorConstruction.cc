@@ -46,6 +46,8 @@
 #include "G4VisAttributes.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4VSDFilter.hh"
+#include "G4SDParticleFilter.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -64,32 +66,48 @@ worldMaterial(0),physicalWorld(0), logicalWorld(0)
     //Defaults for Boro
     BoroPositionX = 0.0 *cm;//-4.0 *cm;
     BoroPositionY = 0.0 *cm;
-    BoroPositionZ = 0.0 *cm;//-6.0 *cm;
+    BoroPositionZ = 3.0 *cm;//-6.0 *cm;
     
-    BoroDimensionX = 15 *cm;
+    BoroDimensionX = 10 *cm;
     BoroExternalRadius = 15 *mm;
     BoroInternalRadius = 0.001 *mm;
     
-    
     // Defaults for the First Detection Plane
-    FirstDetectionPlaneSizeX = 100 *um;
-    FirstDetectionPlaneSizeY = worldSizeY;
-    FirstDetectionPlaneSizeZ = worldSizeZ;
+    DetectionPlaneSizeX = 1 *um;
+    DetectionPlaneSizeY = 10 *cm;
+    DetectionPlaneSizeZ = 10 *cm;
     
-    FirstDetectionPlanePositionX = -6.0 *cm;
-    FirstDetectionPlanePositionY = 0.0 *m;
-    FirstDetectionPlanePositionZ = 0.0 *m;
-    
+    DetectionPlanePositionX = -7.7 *cm;
+    DetectionPlanePositionY = 0.0 *m;
+    DetectionPlanePositionZ = 0.0 *m;
     
     // ***** Ge crystal *****
     GermaniumInternalRadius = 0.0 *mm;
-    GermaniumExternalRadius = 79.0 *mm;
-    GermaniumDimensionX = 71.0 *mm;
+    GermaniumExternalRadius = 70.0 *mm;
+    GermaniumDimensionX = 82.0 *mm;
     
-    GermaniumPositionX = -10.0 *cm;
+    GermaniumPositionX = -12.0 *cm;
     GermaniumPositionY = 0.0 *cm;
     GermaniumPositionZ = 0.0 *cm;
     
+    // Defaults for the Front Shield
+    FrontShieldSizeX = 5 *cm;
+    FrontShieldSizeY = 20 *cm;
+    FrontShieldSizeZ = 20 *cm;
+    
+    FrontShieldPositionX = -5.0 *cm;
+    FrontShieldPositionY = 0.0 *cm;
+    FrontShieldPositionZ = 0.0 *cm;
+    
+    // Defaults for the Front Shield Slit
+    FrontShieldSlitSizeX = 5 *cm;
+    FrontShieldSlitSizeY = 7 *cm;
+    FrontShieldSlitSizeZ = 2 *cm;
+    
+    FrontShieldSlitPositionX = 0.0 *cm;
+    FrontShieldSlitPositionY = 0.0 *cm;
+    FrontShieldSlitPositionZ = 0.0 *cm;
+
     //Colour //
     green = new G4VisAttributes( G4Colour(0, 1, 0));
     green -> SetVisibility(true);
@@ -123,9 +141,7 @@ worldMaterial(0),physicalWorld(0), logicalWorld(0)
 SDCDetectorConstruction::~SDCDetectorConstruction()
 { }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //////////////////////////////////////////////////////////////////////////////////
-
 void SDCDetectorConstruction::ComputeWordGeometricalParameters()
 {
 }
@@ -142,6 +158,8 @@ G4VPhysicalVolume* SDCDetectorConstruction::Construct()
     return ConstructWorld();
     
 }
+
+//////////////////////////////////////////////////////////////////////////////////
 void SDCDetectorConstruction::DefineMaterials()
 {
     //-------- NIST Materials ----------------------------------------------------
@@ -157,6 +175,8 @@ void SDCDetectorConstruction::DefineMaterials()
     PMMA = pNISTManager -> FindOrBuildMaterial("G4_PLEXIGLASS");
     glass = pNISTManager -> FindOrBuildMaterial("G4_GLASS_PLATE");
     germanium   = pNISTManager->FindOrBuildMaterial("G4_Ge");
+    DetectionPlaneMaterial = pNISTManager->FindOrBuildMaterial("G4_WATER");
+    lead = pNISTManager -> FindOrBuildMaterial("G4_Pb");
     
     
     G4UnitDefinition::BuildUnitsTable();
@@ -164,19 +184,18 @@ void SDCDetectorConstruction::DefineMaterials()
     Isotopo_B11 = new G4Isotope(name="Isotopo_B11", iz=5, n=6, a=11.00*CLHEP::g/CLHEP::mole);
     
     Elemento_B10  = new G4Element(name= "Elemento_B10", symbol="B10", ncomponents=1);
-    Elemento_B11  = new G4Element(name= "Elemento_B11", symbol="B10", ncomponents=1);
-    Elemento_B10->AddIsotope(Isotopo_B10, abundance=100*perCent);
-    Elemento_B11->AddIsotope(Isotopo_B11, abundance=100*perCent);
+    Elemento_B11  = new G4Element(name= "Elemento_B11", symbol="B11", ncomponents=1);
+    Elemento_B10 -> AddIsotope(Isotopo_B10, abundance=100*perCent);
+    Elemento_B11 -> AddIsotope(Isotopo_B11, abundance=100*perCent);
     
     Materiale_B10 = new G4Material("Materiale_B10", density=1.15*g/cm3, ncomp=1);
     Materiale_B10 -> AddElement(Elemento_B10, 1);
+    
     Materiale_B11 = new G4Material("Materiale_Boro11", density=1.15*g/cm3, ncomp=1);
-    Materiale_B11-> AddElement(Elemento_B11, 1);
-
+    Materiale_B11 -> AddElement(Elemento_B11, 1);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//////////////////////////////////////////////////////////////////////////////////
 G4VPhysicalVolume* SDCDetectorConstruction::ConstructWorld()
 {  
  
@@ -186,7 +205,7 @@ G4VPhysicalVolume* SDCDetectorConstruction::ConstructWorld()
                            worldSizeZ/2);
     
     logicalWorld = new G4LogicalVolume(solidWorld,
-                                       vacuum,
+                                       air,
                                        "logicalWorld",
                                        0,
                                        0,
@@ -206,7 +225,9 @@ G4VPhysicalVolume* SDCDetectorConstruction::ConstructWorld()
     gray -> SetForceWireframe(true);
     logicalWorld -> SetVisAttributes(gray);
     
-
+    // Boron cylinder
+    // **************
+    
     BoroSolidVolume = new G4Tubs("BoroSolidVolume",
                                  BoroInternalRadius/2,
                                  BoroExternalRadius/2,
@@ -216,7 +237,7 @@ G4VPhysicalVolume* SDCDetectorConstruction::ConstructWorld()
     
     
     BoroLogicalVolume = new G4LogicalVolume(BoroSolidVolume,
-                                            tantalum,
+                                            Materiale_B10,
                                             "BoroLogicalVolume",
                                             0,
                                             0,
@@ -237,7 +258,8 @@ G4VPhysicalVolume* SDCDetectorConstruction::ConstructWorld()
     
     
     
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // Germanium detector
+    // ******************
     
     G4double phi = 90. *deg;
     // Matrix definition for a 90 deg rotation with respect to Y axis
@@ -261,13 +283,87 @@ G4VPhysicalVolume* SDCDetectorConstruction::ConstructWorld()
     
     
     GermaniumPhysicalVolume = new G4PVPlacement (G4Transform3D(rm,
-                                                               G4ThreeVector(GermaniumPositionX, GermaniumPositionY,  GermaniumPositionZ)),
+                                                 G4ThreeVector(GermaniumPositionX, GermaniumPositionY,GermaniumPositionZ)),
                                             GermaniumLogicalVolume,
                                             "GermaniumPhysicalVolume",
                                             logicalWorld,
                                             false,
                                             0,
                                             fCheckOverlaps);
+    
+    
+    // A virtual detection plane
+    // *************************
+    
+    DetectionPlaneSolidVolume = new G4Box("DetectionPlaneSolidVolume",
+                                    DetectionPlaneSizeX,
+                                    DetectionPlaneSizeY,
+                                    DetectionPlaneSizeZ);
+    
+    DetectionPlaneLogicalVolume = new G4LogicalVolume(DetectionPlaneSolidVolume,
+                                                                    DetectionPlaneMaterial,
+                                                                    "DetectionPlaneLogicalVolume");
+    
+    DetectionPlanePhysicalVolume = new G4PVPlacement(0,
+                                                     G4ThreeVector(DetectionPlanePositionX, DetectionPlanePositionY,  DetectionPlanePositionZ),
+                                                 DetectionPlaneLogicalVolume,
+                                                 "DetectionPlanePhysicalVolume",
+                                                 logicalWorld,
+                                                 false,
+                                                 0,
+                                                 fCheckOverlaps);
+    
+    DetectionPlaneLogicalVolume -> SetVisAttributes(red);
+    
+    
+    // Front shielding of the Germanium detector
+    // *****************************************
+    
+    FrontShieldSolidVolume = new G4Box("FrontShieldSolidVolume",
+                                          FrontShieldSizeX/2,
+                                          FrontShieldSizeY/2,
+                                          FrontShieldSizeZ/2);
+    
+    FrontShieldLogicalVolume = new G4LogicalVolume(FrontShieldSolidVolume,
+                                                      lead,
+                                                      "FrontShieldLogicalVolume");
+    
+    FrontShieldPhysicalVolume = new G4PVPlacement(0,
+                                                     G4ThreeVector(FrontShieldPositionX,
+                                                                   FrontShieldPositionY,
+                                                                   FrontShieldPositionZ),
+                                                     FrontShieldLogicalVolume,
+                                                     "FrontShieldPhysicalVolume",
+                                                     logicalWorld,
+                                                     false,
+                                                     0,
+                                                     fCheckOverlaps);
+    
+    FrontShieldLogicalVolume -> SetVisAttributes(yellow);
+    
+    // Constructing the slit of the Front shield
+    // ****************************************
+    FrontShieldSlitSolidVolume = new G4Box("FrontShieldSlitSolidVolume",
+                                       FrontShieldSlitSizeX/2,
+                                       FrontShieldSlitSizeY/2,
+                                       FrontShieldSlitSizeZ/2);
+    
+    FrontShieldSlitLogicalVolume = new G4LogicalVolume(FrontShieldSlitSolidVolume,
+                                                   air,
+                                                   "FrontShieldSlitLogicalVolume");
+    
+    FrontShieldSlitPhysicalVolume = new G4PVPlacement(0,
+                                                  G4ThreeVector(FrontShieldSlitPositionX,
+                                                                FrontShieldSlitPositionY,
+                                                                FrontShieldSlitPositionZ),
+                                                  FrontShieldSlitLogicalVolume,
+                                                  "FrontShieldSlitPhysicalVolume",
+                                                  FrontShieldLogicalVolume,
+                                                  false,
+                                                  0,
+                                                  fCheckOverlaps);
+    
+    FrontShieldSlitLogicalVolume -> SetVisAttributes(black);
     
      return physicalWorld;
 }
@@ -278,11 +374,19 @@ G4VPhysicalVolume* SDCDetectorConstruction::ConstructWorld()
 void SDCDetectorConstruction::ConstructSDandField()
 {
   G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
- 
   G4MultiFunctionalDetector* cryst = new G4MultiFunctionalDetector("GermaniumPhysicalVolume");
   G4VPrimitiveScorer* primitiv1 = new G4PSEnergyDeposit("edep");
-  cryst->RegisterPrimitive(primitiv1);
-  SetSensitiveDetector("GermaniumLogicalVolume",cryst);
+    SetSensitiveDetector("GermaniumLogicalVolume",cryst);
+
+    //G4SDParticleFilter *gammaFilter = new G4SDParticleFilter("gammaFilter", "gamma");
+    //G4SDParticleFilter *electronFilter = new G4SDParticleFilter("electronFilter", "e-");
+    //G4SDParticleFilter *positronFilter = new G4SDParticleFilter("positronFilter", "e+");
+    
+    //primitiv1 -> SetFilter(gammaFilter);
+    //primitiv1 -> SetFilter(electronFilter);
+    //primitiv1 -> SetFilter(positronFilter);
+    cryst -> RegisterPrimitive(primitiv1);
+    
   
  
 

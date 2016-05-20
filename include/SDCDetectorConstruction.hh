@@ -101,12 +101,16 @@ public:
     G4Material*         PMMA;
     G4Material*         glass;
     G4Material*         germanium;
+    G4Material*         lead;
+    
     G4Isotope* Isotopo_B11;
     G4Isotope* Isotopo_B10;
     G4Element* Elemento_B10;
     G4Element* Elemento_B11;
+    
     G4Material* Materiale_B10;
     G4Material* Materiale_B11;
+    G4Material* DetectionPlaneMaterial;
 
     G4bool  fCheckOverlaps;
     
@@ -115,10 +119,16 @@ public:
     
     G4double    worldSizeX, worldSizeY, worldSizeZ;
     
-    G4double FirstDetectionPlaneSizeX, FirstDetectionPlaneSizeY, FirstDetectionPlaneSizeZ;
-    G4double FirstDetectionPlanePositionX, FirstDetectionPlanePositionY, FirstDetectionPlanePositionZ;
-    
     // Definition of the position and dimension
+
+    G4double DetectionPlaneSizeX, DetectionPlaneSizeY, DetectionPlaneSizeZ;
+    G4double DetectionPlanePositionX, DetectionPlanePositionY, DetectionPlanePositionZ;
+    G4double FrontShieldSizeX, FrontShieldSizeY, FrontShieldSizeZ;
+    G4double FrontShieldPositionX, FrontShieldPositionY, FrontShieldPositionZ;
+    
+    G4double FrontShieldSlitSizeX, FrontShieldSlitSizeY, FrontShieldSlitSizeZ;
+    G4double FrontShieldSlitPositionX, FrontShieldSlitPositionY, FrontShieldSlitPositionZ;
+    
     G4double BoroPositionX, BoroPositionY, BoroPositionZ;
     G4double BoroDimensionX, BoroInternalRadius, BoroExternalRadius;
     
@@ -133,8 +143,10 @@ public:
     
     // Definition of the 'solid volumes' variables
     G4Box*  solidWorld;
-    G4Box*  FirstSolidDetectionPlane;
-
+    G4Box*  DetectionPlaneSolidVolume;
+    G4Box*  FrontShieldSolidVolume;
+G4Box*  FrontShieldSlitSolidVolume;
+    
     G4Sphere* sampleSolid;
     G4Tubs* BoroSolidVolume;
     
@@ -143,19 +155,22 @@ public:
     
     // Definition of the 'physical volumes' variables
     G4VPhysicalVolume*  physicalWorld;
-    G4VPhysicalVolume*  FirstPhysicalDetectionPlane;
-    
+    G4VPhysicalVolume*  DetectionPlanePhysicalVolume;
+    G4VPhysicalVolume*  FrontShieldPhysicalVolume;
+    G4VPhysicalVolume*  FrontShieldSlitPhysicalVolume;
+
     //
     G4VPhysicalVolume* BoroPhysicalVolume;
     G4LogicalVolume * GermaniumLogicalVolume;
     G4VPhysicalVolume *GermaniumPhysicalVolume;
     
-    
     // Definition of the 'logical volumes' variables
     G4LogicalVolume*    logicalWorld;
     G4LogicalVolume*    FirstLogicalDetectionPlane;
     G4LogicalVolume*    BoroLogicalVolume;
-    
+    G4LogicalVolume*    DetectionPlaneLogicalVolume;
+    G4LogicalVolume*    FrontShieldLogicalVolume;
+    G4LogicalVolume*    FrontShieldSlitLogicalVolume;
     
     //G4MultiFunctionalDetector* Germanium_Detector;
     G4VPrimitiveScorer* PrimitiveScorer;

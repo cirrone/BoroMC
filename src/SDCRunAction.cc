@@ -63,7 +63,6 @@ void SDCRunAction::BeginOfRunAction(const G4Run* run)
 { 
   G4cout << "### Run " << run->GetRunID() << " start." << G4endl;
   
-
   // Create analysis manager
   // Notice: it must be done the same way in master and workers
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
@@ -79,10 +78,10 @@ void SDCRunAction::BeginOfRunAction(const G4Run* run)
   analysisManager->FinishNtuple();
   */
 
-  analysisManager -> CreateH1("h1","Energy",3000,0.,3000.);
+  analysisManager -> CreateH1("1","Energy deposited",10,0.,10*MeV);
 
   // Create a new output file
-  analysisManager->OpenFile("prova.txt");
+  analysisManager->OpenFile("provina.txt");
 
   //inform the runManager to save random number seed
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);

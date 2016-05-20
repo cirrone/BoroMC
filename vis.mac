@@ -3,7 +3,7 @@
 /run/initialize
 
 
-/vis/open OGLI 600x600-0+0
+#/vis/open OGLI 600x600-0+0
 /vis/viewer/set/autoRefresh false
 /vis/verbose errors
 /vis/drawVolume
@@ -33,9 +33,10 @@
 
 /gps/particle proton
 
-/gps/energy 60 MeV
-/gps/ene/type Gauss
-/gps/ene/sigma 0.3 MeV
+/gps/energy 62 MeV
+
+#/gps/ene/type Gauss
+#/gps/ene/sigma 0.3 MeV
 
 
 /gps/position 0 0 -15 cm
@@ -54,8 +55,8 @@
 #/gps/direction 1 0 0
 #/gps/pos/rot1 0. 0. 1.
 #
-/testhadr/CutGamma 0.001 mm
-/testhadr/CutEl 1 mm
+#/testhadr/CutGamma 0.001 mm
+#/testhadr/CutEl 1 m
 
 
-/run/beamOn 1000
+/run/beamOn 10000000000

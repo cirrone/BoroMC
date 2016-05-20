@@ -75,31 +75,31 @@ void SDCSteppingAction::UserSteppingAction(const G4Step* step)
     G4String VolumeAtVertex = VolumeVertex -> GetName();
     
     G4String volume =  step->GetTrack()->GetVolume()->GetName();
+
     G4Track* theTrack = step->GetTrack();
     G4String particleName = step->GetTrack()->GetDefinition()->GetParticleName();
     
     const G4VProcess* process = step->GetPostStepPoint()->GetProcessDefinedStep();
     G4String processName = process->GetProcessName();
-    /*
-     if((aStep->GetTrack()->GetVolume()->GetName()=="physicalDetectionPlane"))
-     &&
-     aStep->GetTrack()->GetDefinition()->GetParticleName() == "proton")
+    
+     if (volume == "DetectionPlanePhysicalVolume" && step->GetTrack()->GetDefinition()->GetParticleName() == "gamma")
      {
-     std::ofstream WriteDataIn("Spatial_EnergyDistribution.txt", std::ios::app);
+     std::ofstream WriteDataIn("GammaDistributionDaSteppingAction.txt", std::ios::app);
      WriteDataIn
      <<   eventNum         << '\t' << "   "
      <<   particleName     << '\t' << "   "
      <<   parentID         << '\t' << "   "
+     <<   trackID         << '\t' << "   "
      <<   PosX/CLHEP::mm   << '\t' << "   "
      <<   PosY/CLHEP::mm   << '\t' << "   "
      <<   PosZ/CLHEP::mm   << '\t' << "   "
-     <<   eKin             << '\t' << "   "
-     <<   material         << '\t' << "   "
+     <<   eKin/MeV           << '\t' << "   "
+     <<   VolumeAtVertex         << '\t' << "   "
      <<   G4endl;
-     theTrack -> SetTrackStatus(fKillTrackAndSecondaries);
      }
-     */
     
+    
+    /*
     if((step->GetTrack()->GetDefinition()->GetParticleName() == "gamma"))
     {
         std::ofstream WriteDataIn("Gamma", std::ios::app);
@@ -119,6 +119,7 @@ void SDCSteppingAction::UserSteppingAction(const G4Step* step)
         theTrack -> SetTrackStatus(fKillTrackAndSecondaries);
 
     }
+     */
     
     /*
     

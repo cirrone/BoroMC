@@ -5,7 +5,8 @@
 #
 
 
-/testhadr/Physics QGSP_BIC_EMY
+/testhadr/Physics QGSP_BERT_HP
+#/testhadr/Physics QGSP_BIC_AllHP
 
 /control/verbose 2
 /control/saveHistory
